@@ -1,5 +1,6 @@
 ## virtual-types.nvim
 This plugin shows type annotations for OCaml functions in virtual text, using built-in LSP client.
+It will probably work with other LSP servers that support [textDocument/codeLens](https://microsoft.github.io/language-server-protocol/specification#textDocument_codeLens) request.
 
 ## Screenshot
 ![screenshot](./screenshot.png)
@@ -14,7 +15,7 @@ This plugin shows type annotations for OCaml functions in virtual text, using bu
 Install with your plugin manager:
 
 ```
-Plug 'nvim-lua/diagnostic-nvim'
+Plug 'jubnzv/virtual-types.nvim'
 ```
 
 And add the following line in your LSP configuration:
