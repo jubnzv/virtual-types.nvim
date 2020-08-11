@@ -24,11 +24,12 @@ function M:on_attach(_, _)
   M.annotate_types()
 
   -- Setup autocmd
-  vim.api.nvim_command [[augroup virtual_types_refresh]]
-    vim.api.nvim_command("autocmd! * <buffer>")
-    vim.api.nvim_command [[autocmd BufEnter,BufWinEnter,TabEnter,BufWrite <buffer> lua require'virtualtypes'.annotate_types()]]
-    vim.api.nvim_command [[autocmd InsertLeave <buffer> lua require'virtualtypes'.annotate_types()]]
-  vim.api.nvim_command [[augroup end]]
+  api.nvim_exec([[
+    augroup virtual_types_refresh
+      autocmd! * <buffer>
+      autocmd BufEnter,BufWinEnter,TabEnter,BufWrite <buffer> lua require'virtualtypes'.annotate_types()
+      autocmd InsertLeave <buffer> lua require'virtualtypes'.annotate_types()
+    augroup END]], '')
 end
 
 function M:annotate_types()
