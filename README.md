@@ -1,8 +1,8 @@
 ## virtual-types.nvim
 This plugin shows type annotations for OCaml functions in virtual text, using built-in LSP client.
 
-## Demo
-[![asciicast](https://asciinema.org/a/352784.svg =400x300)](https://asciinema.org/a/352784)
+## Screenshot
+![screenshot](./screenshot.png)
 
 ## Prerequisites
 * Neovim nightly
