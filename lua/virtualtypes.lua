@@ -12,7 +12,7 @@ local virtual_types_ns = api.nvim_create_namespace("virtual_types");
 
 function M.enable()
   is_enabled = true
-  M.annotate_types()
+  M.annotate_types_async()
 end
 
 function M.disable()
@@ -21,18 +21,25 @@ function M.disable()
 end
 
 function M:on_attach(_, _)
-  M.annotate_types()
+  -- Don't use schedule. It somewhat slower on startup.
+  annotate_types()
 
   -- Setup autocmd
   api.nvim_exec([[
     augroup virtual_types_refresh
       autocmd! * <buffer>
-      autocmd BufEnter,BufWinEnter,TabEnter,BufWrite <buffer> lua require'virtualtypes'.annotate_types()
-      autocmd InsertLeave <buffer> lua require'virtualtypes'.annotate_types()
+      autocmd BufEnter,BufWinEnter,TabEnter,BufWrite <buffer> lua require'virtualtypes'.annotate_types_async()
+      autocmd InsertLeave <buffer> lua require'virtualtypes'.annotate_types_async()
     augroup END]], '')
 end
 
-function M:annotate_types()
+-- Async wrapper for annotate_types.
+-- We need it since 'textDocument/codeLens' call can freeze UI for ~0.2s.
+function M:annotate_types_async()
+    cr = vim.schedule(annotate_types)
+end
+
+function annotate_types()
   if is_enabled == false then return end
   if vim.fn.getcmdwintype() == ':' then return end
   if #vim.lsp.buf_get_clients() == 0 then return end
