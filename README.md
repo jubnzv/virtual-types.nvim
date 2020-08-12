@@ -1,18 +1,19 @@
 ## virtual-types.nvim
-This plugin shows type annotations for OCaml functions in virtual text, using built-in LSP client.
-It will probably work with other LSP servers that support [textDocument/codeLens](https://microsoft.github.io/language-server-protocol/specification#textDocument_codeLens) request.
+This plugin shows type annotations for functions in virtual text using built-in LSP client.
+
+I use it with [ocaml-lsp](https://github.com/ocaml/ocaml-lsp), but it will probably work with other LSP servers that support [textDocument/codeLens](https://microsoft.github.io/language-server-protocol/specification#textDocument_codeLens) request.
 
 ## Screenshot
 ![screenshot](./screenshot.png)
 
 ## Prerequisites
-* Neovim nightly
+* neovim nightly
 * [nvim-lsp](https://github.com/neovim/nvim-lsp) plugin
 * [ocaml-lsp](https://github.com/ocaml/ocaml-lsp) language server
 
 ## Installation
 
-Install with your plugin manager:
+Install with plugin manager:
 
 ```
 Plug 'jubnzv/virtual-types.nvim'
