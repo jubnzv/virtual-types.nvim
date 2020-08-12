@@ -53,6 +53,7 @@ function annotate_types()
 
   if response then
     for _, v in ipairs(response) do
+      if v == nil or v["result"] == nil then return end -- no response
       for _,vv in pairs(v["result"]) do
         local start_line = -1
         for _,vvv in pairs(vv["range"]) do
@@ -71,7 +72,7 @@ function annotate_types()
       end
     end
   else
-    api.nvim_command("echohl WarningMsg | echo 'No response' | echohl None")
+    api.nvim_command("echohl WarningMsg | echo 'VirtualTypes: No response' | echohl None")
   end
 end
 
