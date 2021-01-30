@@ -71,8 +71,8 @@ function annotate_types()
         end
       end
     end
-  else
-    api.nvim_command("echohl WarningMsg | echo 'VirtualTypes: No response' | echohl None")
+  -- else
+  --   api.nvim_command("echohl WarningMsg | echo 'VirtualTypes: No response' | echohl None")
   end
 end
 
