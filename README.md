@@ -9,7 +9,6 @@ I use it with [ocaml-lsp](https://github.com/ocaml/ocaml-lsp), but it will proba
 ## Prerequisites
 * Neovim 0.5+
 * [nvim-lsp](https://github.com/neovim/nvim-lsp) plugin
-* [ocaml-lsp](https://github.com/ocaml/ocaml-lsp) language server
 
 ## Installation
 
