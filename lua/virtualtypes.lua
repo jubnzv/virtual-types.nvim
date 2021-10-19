@@ -8,7 +8,7 @@ local M = {}
 -- The `nvim_buf_set_virtual_text` will be deprecated in 0.6:
 -- https://github.com/neovim/neovim/pull/1518
 local set_virtual_text
-if vim.api.nvim_call_function('has', {'nvim-0.6'}) == 1 then
+if vim.api.nvim_call_function('exists', {'*nvim_buf_set_extmark'}) == 1 then
   set_virtual_text = function(buffer_number, ns, start_line, msg)
     api.nvim_buf_set_extmark(buffer_number, ns, start_line, 1, { virt_text = { msg } } )
   end
