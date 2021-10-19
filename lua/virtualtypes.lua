@@ -4,6 +4,20 @@ local lsp = vim.lsp
 
 local M = {}
 
+-- Selects an API function to show virtual text.
+-- The `nvim_buf_set_virtual_text` will be deprecated in 0.6:
+-- https://github.com/neovim/neovim/pull/1518
+local set_virtual_text
+if vim.api.nvim_call_function('has', {'nvim-0.6'}) == 1 then
+  set_virtual_text = function(buffer_number, ns, start_line, msg)
+    api.nvim_buf_set_extmark(buffer_number, ns, start_line, 1, { virt_text = { msg } } )
+  end
+else
+  set_virtual_text = function(buffer_number, ns, start_line, msg)
+    api.nvim_buf_set_virtual_text(buffer_number, ns, start_line, {msg}, {})
+  end
+end
+
 -- Plugin status
 local is_enabled = true
 
@@ -63,10 +77,8 @@ function annotate_types()
           if vvv == nil or vvv == "" then
             goto skip_to_next
           end
-          local msg = {}
-          msg[1] = vvv
-          msg[2] = "TypeAnnot"
-          api.nvim_buf_set_virtual_text(buffer_number, virtual_types_ns, start_line, {msg}, {})
+          local msg = {vvv, "TypeAnnot"}
+          set_virtual_text(buffer_number, virtual_types_ns, start_line, msg)
           ::skip_to_next::
         end
       end
