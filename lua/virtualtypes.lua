@@ -34,7 +34,18 @@ function M.disable()
   is_enabled = false
 end
 
-function M:on_attach(_, _)
+function M.on_attach(client, _)
+  if client == nil then
+    return
+  end
+  if not client.supports_method('textDocument/codeLens') then
+    local err = string.format(
+      "virtual-types.nvim: %s does not support \"textDocument/codeLens\" command",
+      client.name)
+    api.nvim_command(string.format("echohl WarningMsg | echo '%s' | echohl None", err))
+    return
+  end
+
   -- Don't use schedule. It somewhat slower on startup.
   annotate_types()
 
