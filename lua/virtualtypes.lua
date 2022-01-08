@@ -10,7 +10,7 @@ local M = {}
 local set_virtual_text
 if vim.api.nvim_call_function('exists', {'*nvim_buf_set_extmark'}) == 1 then
   set_virtual_text = function(buffer_number, ns, start_line, msg)
-    api.nvim_buf_set_extmark(buffer_number, ns, start_line, 1, { virt_text = { msg } } )
+    api.nvim_buf_set_extmark(buffer_number, ns, start_line, 1, { virt_text = { msg }, hl_mode = 'combine' } )
   end
 else
   set_virtual_text = function(buffer_number, ns, start_line, msg)
