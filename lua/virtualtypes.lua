@@ -83,11 +83,11 @@ function annotate_types()
     for _, v in ipairs(response) do
       if v == nil or v["result"] == nil then return end -- no response
       for _,vv in pairs(v["result"]) do
-        local start_line = -1
-        for _,vvv in pairs(vv["range"]) do
-          start_line = tonumber(vvv["line"])
-        end
-        if vv["command"] then
+        if vv["range"] and vv["command"] then
+          local start_line = -1
+          for _,vvv in pairs(vv["range"]) do
+            start_line = tonumber(vvv["line"])
+          end
           for _,vvv in pairs(vv["command"]) do
             if vvv == nil or vvv == "" then
               goto skip_to_next
