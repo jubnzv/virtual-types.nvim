@@ -83,17 +83,19 @@ function annotate_types()
     for _, v in ipairs(response) do
       if v == nil or v["result"] == nil then return end -- no response
       for _,vv in pairs(v["result"]) do
-        local start_line = -1
-        for _,vvv in pairs(vv["range"]) do
-          start_line = tonumber(vvv["line"])
-        end
-        for _,vvv in pairs(vv["command"]) do
-          if vvv == nil or vvv == "" then
-            goto skip_to_next
+        if vv["range"] and vv["command"] then
+          local start_line = -1
+          for _,vvv in pairs(vv["range"]) do
+            start_line = tonumber(vvv["line"])
           end
-          local msg = {vvv, "TypeAnnot"}
-          set_virtual_text(buffer_number, virtual_types_ns, start_line, msg)
-          ::skip_to_next::
+          for _,vvv in pairs(vv["command"]) do
+            if vvv == nil or vvv == "" then
+              goto skip_to_next
+            end
+            local msg = {vvv, "TypeAnnot"}
+            set_virtual_text(buffer_number, virtual_types_ns, start_line, msg)
+            ::skip_to_next::
+          end
         end
       end
     end
