@@ -1,4 +1,7 @@
 ## virtual-types.nvim
+
+![](https://github.com/jubnzv/virtual-types.nvim/workflows/check/badge.svg)
+
 This plugin shows type annotations for functions in virtual text using built-in LSP client.
 
 I use it with [ocaml-lsp](https://github.com/ocaml/ocaml-lsp), but it will probably work with other LSP servers that support [textDocument/codeLens](https://microsoft.github.io/language-server-protocol/specification#textDocument_codeLens) request.
