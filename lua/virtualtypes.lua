@@ -32,32 +32,18 @@ local virtual_types_ns = vim.api.nvim_create_namespace("virtual_types")
 -- Current plugin status.
 local is_enabled = true
 
-local M = {}
-
 -- Clears the current buffer of virtual text.
-M.clear_namespace = function()
+local clear_namespace = function()
   vim.api.nvim_buf_clear_namespace(0, virtual_types_ns, 0, -1)
 end
 
 -- Writes virtual text to the current buffer.
 ---@param start_line integer The line number where the annotation should be written.
 ---@param annotation string The contents of the annotation.
-M.set_virtual_text = function(start_line, annotation)
+local set_virtual_text = function(start_line, annotation)
   vim.api.nvim_buf_set_extmark(0, virtual_types_ns, start_line, 1, {
     virt_text = { { annotation, "TypeAnnot" } },
   })
-end
-
--- Enables the plugin.
-M.enable = function()
-  is_enabled = true
-  M.annotate_types_async()
-end
-
--- Disables the plugin.
-M.disable = function()
-  is_enabled = false
-  M.clear_namespace()
 end
 
 -- Adds type annotations (via textDocument/codeLens requests) to the buffer.
@@ -66,7 +52,7 @@ local annotate_types = function()
     return
   end
   -- Clear the buffer, otherwise duplicate annotations will get written
-  M.clear_namespace()
+  clear_namespace()
 
   local parameters = vim.lsp.util.make_position_params(0, nil) ---@diagnostic disable-line:param-type-mismatch
   local responses = vim.lsp.buf_request_sync(0, "textDocument/codeLens", parameters) --[[ @as response[] ]]
@@ -78,12 +64,26 @@ local annotate_types = function()
           if code_lens.range and code_lens.command then
             local start_line = code_lens.range["end"].line
             local annotation = code_lens.command.title
-            M.set_virtual_text(start_line, annotation)
+            set_virtual_text(start_line, annotation)
           end
         end
       end
     end
   end
+end
+
+local M = {}
+
+-- Enables the plugin.
+M.enable = function()
+  is_enabled = true
+  M.annotate_types_async()
+end
+
+-- Disables the plugin.
+M.disable = function()
+  is_enabled = false
+  clear_namespace()
 end
 
 -- Async wrapper for annotate_types, since 'textDocument/codeLens' call can freeze UI for ~0.2s.
