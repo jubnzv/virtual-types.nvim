@@ -26,10 +26,10 @@
 ---@class response
 ---@field result result?
 
--- Namespace for virtual text messages
+-- Plugin namespace for virtual type annotations.
 local virtual_types_ns = vim.api.nvim_create_namespace("virtual_types")
 
--- Plugin status
+-- Current plugin status.
 local is_enabled = true
 
 local M = {}
@@ -49,26 +49,29 @@ M.set_virtual_text = function(start_line, annotation)
   })
 end
 
+-- Enables the plugin.
 M.enable = function()
   is_enabled = true
   M.annotate_types_async()
 end
 
+-- Disables the plugin.
 M.disable = function()
-  M.clear_namespace()
   is_enabled = false
+  M.clear_namespace()
 end
 
+-- Adds type annotations (via textDocument/codeLens requests) to the buffer.
 local annotate_types = function()
-  if is_enabled == false or vim.fn.getcmdwintype() == ":" or #vim.lsp.get_active_clients() == 0 then
+  if not is_enabled or #vim.lsp.get_active_clients() == 0 then
     return
   end
-  local parameter = vim.lsp.util.make_position_params(0, nil) ---@diagnostic disable-line
-  local responses = vim.lsp.buf_request_sync(0, "textDocument/codeLens", parameter) --[[ @as response[] ]]
-
-  vim.pretty_print(responses)
-
+  -- Clear the buffer, otherwise duplicate annotations will get written
   M.clear_namespace()
+
+  local parameters = vim.lsp.util.make_position_params(0, nil) ---@diagnostic disable-line:param-type-mismatch
+  local responses = vim.lsp.buf_request_sync(0, "textDocument/codeLens", parameters) --[[ @as response[] ]]
+  -- Set the virtual text for all valid code lens requests
   if responses then
     for _, response in pairs(responses) do
       if response and response.result then
@@ -84,31 +87,28 @@ local annotate_types = function()
   end
 end
 
--- Async wrapper for annotate_types.
--- We need it since 'textDocument/codeLens' call can freeze UI for ~0.2s.
+-- Async wrapper for annotate_types, since 'textDocument/codeLens' call can freeze UI for ~0.2s.
 M.annotate_types_async = function()
   vim.schedule(annotate_types)
 end
 
+-- Starts the plugin on the current buffer.
 M.on_attach = function(client, _)
   if not client.supports_method("textDocument/codeLens") then
-    local err = string.format('virtual-types.nvim: %s does not support "textDocument/codeLens" command', client.name)
+    local err = string.format('virtual-types.nvim: %s does not support "textDocument/codeLens" request.', client.name)
     vim.notify_once(err, vim.log.levels.WARN)
     return
   end
 
-  -- Don't use schedule. It somewhat slower on startup.
+  -- perf: Don't use the async version, since it's slower on startup
   annotate_types()
 
-  -- Setup autocommand to refresh the type annotations
+  -- Setup autocommand to refresh the type annotations on certain events
   local virtual_types_augroup = vim.api.nvim_create_augroup("virtual_types_refresh", {})
   vim.api.nvim_create_autocmd({
     "BufEnter",
-    "BufWinEnter",
-    "BufWrite",
-    "CursorMoved",
     "InsertLeave",
-    "TabEnter",
+    "TextChanged",
   }, {
     buffer = 0,
     callback = M.annotate_types_async,
