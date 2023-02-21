@@ -2,6 +2,10 @@
 
 This plugin shows type annotations as virtual text.
 
+Most of the credit goes to [jubnzv](https://www.github.com/jubnzv), who wrote
+the initial version of the plugin
+[here](https://www.github.com/jubnzv/virtual-types.nvim).
+
 ## Screenshot
 
 <div style="text-align: center">
