@@ -1,20 +1,25 @@
--- Type annotation for the response of a LSP textDocument/codeLens request, more information can be found here:
+-- See the Microsoft LSP Documentation for more information on textDocument/codeLens:
 -- https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_codeLens
+
+-- Position in a text document expressed as zero-based line and zero-based character offset.
 ---@class position
----@field character integer
----@field line integer
+---@field character integer Character offset on a line in a document (zero-based).
+---@field line integer Line position in a document (zero-based).
 
+-- A range in a text document expressed as (zero-based) start and end positions.
 ---@class range
----@field start position
----@field end position
+---@field start position The range's start position.
+---@field end position The range's end position.
 
+-- Represents a reference to a command.
 ---@class command
----@field command string
----@field title string
+---@field command string The identifier of the actual command handler.
+---@field title string Title of the command, like `save`.
 
+-- A code lens represents a command that should be shown along with source text.
 ---@class code_lens
----@field command command
----@field range range
+---@field command command? The command this code lens represents.
+---@field range range The range in which this code lens is valid. Should only span a single line.
 
 ---@alias result code_lens[]
 
@@ -29,7 +34,7 @@ local is_enabled = true
 
 local M = {}
 
--- Clears the buffer of virtual text.
+-- Clears the current buffer of virtual text.
 M.clear_namespace = function()
   vim.api.nvim_buf_clear_namespace(0, virtual_types_ns, 0, -1)
 end
@@ -59,22 +64,20 @@ local annotate_types = function()
     return
   end
   local parameter = vim.lsp.util.make_position_params(0, nil) ---@diagnostic disable-line
-  local responses = vim.lsp.buf_request_sync(0, "textDocument/codeLens", parameter)
-  ---@cast responses response[]
+  local responses = vim.lsp.buf_request_sync(0, "textDocument/codeLens", parameter) --[[ @as response[] ]]
 
   vim.pretty_print(responses)
 
   M.clear_namespace()
   if responses then
     for _, response in pairs(responses) do
-      if response == nil or response.result == nil then
-        return
-      end
-      for _, code_lens in pairs(response.result) do
-        if code_lens.range and code_lens.command then
-          local start_line = code_lens.range["end"].line
-          local annotation = code_lens.command.title
-          M.set_virtual_text(start_line, annotation)
+      if response and response.result then
+        for _, code_lens in pairs(response.result) do
+          if code_lens.range and code_lens.command then
+            local start_line = code_lens.range["end"].line
+            local annotation = code_lens.command.title
+            M.set_virtual_text(start_line, annotation)
+          end
         end
       end
     end
@@ -83,11 +86,11 @@ end
 
 -- Async wrapper for annotate_types.
 -- We need it since 'textDocument/codeLens' call can freeze UI for ~0.2s.
-function M.annotate_types_async()
+M.annotate_types_async = function()
   vim.schedule(annotate_types)
 end
 
-function M.on_attach(client, _)
+M.on_attach = function(client, _)
   if not client.supports_method("textDocument/codeLens") then
     local err = string.format('virtual-types.nvim: %s does not support "textDocument/codeLens" command', client.name)
     vim.notify_once(err, vim.log.levels.WARN)
