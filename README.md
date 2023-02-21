@@ -4,26 +4,34 @@ This plugin shows type annotations as virtual text.
 
 ## Screenshot
 
-![screenshot](./screenshot.png)
+<div style="text-align: center">
+
+![screenshot](https://user-images.githubusercontent.com/48545987/220223116-5a0edc7c-ffbf-41e1-8666-fe223fb9d88b.png)
+
+</div>
 
 ## Prerequisites
 
 - [Neovim 0.8+](https://github.com/neovim/neovim/releases)
-- [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) plugin
+- [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
 - A LSP server that supports the
   [textDocument/codeLens](https://microsoft.github.io/language-server-protocol/specification#textDocument_codeLens)
   request
 
 ## Installation
 
-Install with plugin manager:
+Using [packer.nvim](https://github.com/wbthomason/packer.nvim):
 
-```
-Plug 'jubnzv/virtual-types.nvim'
+```lua
+use("kylechui/virtual-types.nvim")
 ```
 
 And add the following line in your LSP configuration:
 
-```
-lua require'nvim_lsp'.ocamllsp.setup{on_attach=require'virtualtypes'.on_attach}
+```lua
+require("lspconfig").ocamllsp.setup({
+    on_attach = function(client)
+        require("virtualtypes").on_attach(client)
+    end,
+})
 ```
