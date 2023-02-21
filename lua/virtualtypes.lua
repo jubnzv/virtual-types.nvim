@@ -45,7 +45,6 @@ end
 M.set_virtual_text = function(start_line, annotation)
   vim.api.nvim_buf_set_extmark(0, virtual_types_ns, start_line, 1, {
     virt_text = { { annotation, "TypeAnnot" } },
-    hl_mode = "combine",
   })
 end
 
@@ -89,7 +88,7 @@ end
 
 -- Async wrapper for annotate_types, since 'textDocument/codeLens' call can freeze UI for ~0.2s.
 M.annotate_types_async = function()
-  vim.schedule(annotate_types)
+  vim.schedule_wrap(annotate_types)
 end
 
 -- Starts the plugin on the current buffer.
