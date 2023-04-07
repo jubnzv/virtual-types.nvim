@@ -39,6 +39,7 @@ function M.enable()
 end
 
 function M.disable()
+  local buffer_number = api.nvim_get_current_buf()
   api.nvim_buf_clear_namespace(buffer_number, virtual_types_ns, 0, -1)
   is_enabled = false
 end
